@@ -1,0 +1,36 @@
+class Solution {
+  public:
+    // Function to find out the unique sizes for d days
+    vector<long long> uniqueSize(int n, int d, vector<vector<long long>> &arr) {
+        // Code Here
+        vector<long long> lengths(n, 0);
+        unordered_map<long long, int> freq;
+        freq[0]= n;
+        vector<long long> res;
+        
+        
+        for(int i= 0; i < d; ++i){
+            int u = arr[i][0] - 1;
+            long long inc = arr[i][1];
+            long long old_val = lengths[u];
+            
+            auto it_old = freq.find(old_val);
+            if(it_old != freq.end()){
+                if(it_old-> second == 1){
+                    freq.erase(it_old);
+                }else{
+                    it_old-> second -=1;
+                }
+            }
+            
+            long long new_val = old_val + inc;
+            lengths[u] = new_val;
+            
+            freq[new_val]++;
+            
+            res.push_back(freq.size());
+        }
+        
+        return res;
+    }
+};
