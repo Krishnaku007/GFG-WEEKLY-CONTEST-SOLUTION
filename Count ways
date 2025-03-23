@@ -1,0 +1,123 @@
+const int MOD = 1e9 + 7;
+
+const int MAX_FACT = 200000;
+
+
+class Solution {
+  public:
+    int countWay(vector<int> a, vector<int> b) {
+        static vector<long long> fact(MAX_FACT + 1, 1);
+        static vector<long long> inv_fact(MAX_FACT + 1, 1);
+        static bool precomputed = false;
+        
+        if(!precomputed){
+            for(int i = 1; i<= MAX_FACT; ++i){
+                fact[i] = fact[i-1] * i % MOD;
+                
+            }
+            
+            inv_fact[MAX_FACT] = powMod(fact[MAX_FACT], MOD-2);
+            
+            for( int i = MAX_FACT - 1; i>=0; --i){
+                inv_fact[i] = inv_fact[i+1] * (i+1) % MOD;
+            }
+            
+            precomputed = true;
+        }
+        
+        int m = a.size();
+        if(m!=b.size()) return 0;
+        if(m==1){
+            return 1;
+        }
+        
+        vector<int>  deltas;
+        for(int i = 1; i<m; ++i){
+            deltas.push_back(b[i] - b[i-1]);
+        }
+        
+        vector<int> s(m, 0);
+        
+        for(int i = 1; i<m; ++i){
+            s[i] = s[i-1] +deltas[i-1];
+        }
+        
+        vector<int> c(m);
+        for(int i=0;i<m;++i){
+            c[i] = a[i] - s[i];
+        }
+        
+        vector<int> sorted_c = c;
+        
+        sort(sorted_c.begin(), sorted_c.end());
+        
+        int low_x, high_x;
+        
+        int n = m;
+        
+        if(n%2 == 1){
+            low_x = sorted_c[n/2];
+            
+            high_x = sorted_c[n/2];
+        }
+        
+        else{
+            low_x = sorted_c[n/2 -1];
+            
+            high_x = sorted_c[n/2];
+        }
+        
+        long long sum_inv = 0;
+        
+        int sum_k = 0;
+        
+        bool first = true;
+        
+        for(int x= low_x; x<=high_x; ++x){
+            
+            
+            long long product_inv =1;
+            int current_sum_k = 0;
+            
+            for(int i=0;i<m;++i){
+                int k_i = abs(c[i] - x);
+                product_inv = product_inv * inv_fact[k_i] % MOD;
+                current_sum_k += k_i;
+            }
+            
+            
+            sum_inv= (sum_inv + product_inv) % MOD;
+            
+            if(first){
+                sum_k = current_sum_k;
+                first = false;
+            }
+            
+        }
+        
+        if(sum_k == 0){
+            return 1;
+        }
+        
+        long long ways = fact[sum_k] * sum_inv % MOD;
+        return (int) ways;
+        
+        }
+        
+        private:
+        
+        static long long powMod(long long a, long long b){
+            long long res = 1;
+            
+            a%=MOD;
+            
+            while(b>0){
+                if(b%2==1){
+                    res = res * a % MOD;
+                }
+                a= a*a%MOD;
+                b/=2;
+            }
+            return res;
+        }
+};
