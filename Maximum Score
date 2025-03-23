@@ -1,0 +1,15 @@
+class Solution {
+  public:
+    int calculateSum(vector<int>& arr) {
+        // code here
+        sort(arr.begin(), arr.end());
+        
+        int sum = 0;
+        int n = arr.size();
+        for(int i = 0; i<n/2; ++i){
+            sum += arr[n-1-i] - arr[i];
+        }
+        
+        return sum;
+    }
+};
